@@ -15,6 +15,7 @@ export default function Form(props) {
     }
 
     const onChange = evt => {
+        evt.persist()
         const { name, value, checked, type } = evt.target
         const valueToUse = type === 'checkbox' ? checked : value
         change(name, valueToUse)
@@ -34,7 +35,7 @@ export default function Form(props) {
             <label>Username
                 <input
                 value={values.username}
-                onchange={onChange}
+                onChange={onChange}
                 name='username'
                 type='text'
                 />
@@ -50,7 +51,7 @@ export default function Form(props) {
             <label>Password
                 <input
                 value={values.password}
-                onchange={onChange}
+                onChange={onChange}
                 name='password'
                 type='password'
                 />

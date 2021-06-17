@@ -56,11 +56,13 @@ function App() {
       username: formValues.username.trim(),
       email: formValues.email.trim(),
       password: formValues.password.trim(),
-      terms: formValues.terms
+      terms: formValues.terms,
     }
     console.log(newUser)
+    
   }
-
+setFormValues(initialFormValues)
+    
   return (
     <div className="App">
       <header className="App-header">

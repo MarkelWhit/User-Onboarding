@@ -3,6 +3,7 @@ import './App.css';
 import Form from './Form'
 import React, { useEffect, useState } from 'react';
 import * as yup from 'yup';
+import axios from 'axios';
 import schema from './formSchema';
 
 const initialFormValues = {
@@ -11,7 +12,7 @@ const initialFormValues = {
   email: '',
   password: '',
   ///checkboxes///
-  terms: false ,
+  terms: false,
 }
 
 const initialFormErrors = {
@@ -32,19 +33,45 @@ function App() {
   const [formErrors, setFormErrors] = useState(initialFormErrors)
   const [disabled, setDisabled] = useState(initialDisabled)
 
-  const validate = (name, value) =>{
+  const getUsers = () => {
+    axios.get('https://reqres.in/api/users')
+      .then(res => {
+        console.log(res.data)
+        setUsers(res.data)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+
+  }
+
+  const postNewUser = newUser => {
+    axios.post('https://reqres.in/api/users', newUser)
+      .then(res => {
+        console.log(res.data)
+        setUsers([res.data, ...users])
+      })
+      .catch(err => {
+        console.log(err)
+      })
+      .finally(() => {
+        setFormValues(initialFormValues)
+      })
+  }
+
+  const validate = (name, value) => {
     yup.reach(schema, name)
       .validate(value)
-      .then(() => setFormErrors({...formErrors, [name]: ''}))
-      .catch(err => setFormErrors({...formErrors, [name]: err.errors[0]}))
+      .then(() => setFormErrors({ ...formErrors, [name]: '' }))
+      .catch(err => setFormErrors({ ...formErrors, [name]: err.errors[0] }))
   }
 
   useEffect(() => {
     schema.isValid(formValues).then(valid => setDisabled(!valid))
-  },[formValues])
+  }, [formValues])
 
   const onChange = (name, value) => {
-    validate(name, value) 
+    validate(name, value)
     setFormValues({
       ...formValues,
       [name]: value
@@ -58,11 +85,14 @@ function App() {
       password: formValues.password.trim(),
       terms: formValues.terms,
     }
-    console.log(newUser)
-    
+    postNewUser(newUser)
   }
-setFormValues(initialFormValues)
-    
+  useEffect(() => {
+    getUsers()
+  }, [])
+
+
+
   return (
     <div className="App">
       <header className="App-header">
@@ -79,12 +109,12 @@ setFormValues(initialFormValues)
           Learn React
         </a>
       </header>
-      <Form 
-      values={formValues}
-      change={onChange}
-      submit={onSubmit}
-      disabled={disabled}
-      errors={formErrors}/>
+      <Form
+        values={formValues}
+        change={onChange}
+        submit={onSubmit}
+        disabled={disabled}
+        errors={formErrors} />
     </div>
   );
 }
